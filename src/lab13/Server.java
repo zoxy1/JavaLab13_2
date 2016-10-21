@@ -2,9 +2,12 @@ package lab13;
 
 import java.io.*;
 import java.net.*;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import sun.security.util.Password;
 
 public class Server {
 
@@ -33,22 +36,25 @@ public class Server {
 			ServerSocket ss = new ServerSocket(3456); // создаем серверный сокет
 
 			Socket client;
+			String password = "";
 			try (Scanner input = new Scanner(System.in)) {
-				String password;
-				begin: while (true) {
 
-					System.out.print("Введите пароль:");
-					password = input.nextLine();
-					if (password.toString().equals("12345") == true) {
-						break begin;
-					} else {
-						System.out.println("Введен не правильный пароль, попробуйте еще раз");
-					}
+				System.out.print("Введите пароль:");
+				password = input.nextLine().toString();
 
-					// Runtime.getRuntime().exec("cls");
-				}
 			}
-			//
+			StringBuffer sendBuff = new StringBuffer();
+			sendBuff.append(password + "\n");
+			sendBuff.append(Server.read("E:/2/in1.txt"));
+
+			char[] mass = sendBuff.toString().toCharArray();
+			ArrayList<Byte> byteArray = new ArrayList<>();
+			for (char x : mass) {
+
+				byteArray.add((byte) (x >> 8));
+				byteArray.add((byte) x);
+			}
+			System.out.println(byteArray);
 
 			System.out.println("Waiting...");
 			client = ss.accept();
@@ -56,9 +62,11 @@ public class Server {
 			System.out.println("Connected"); // если мы дошли до этой строки,
 												// значит снами соединился
 												// клиент
-			System.out.println(Server.read("E:/2/in.txt"));
-			client.getOutputStream().write(100); // отсылаем байт со значением
-													// 10
+
+			for (int x : byteArray) {
+				client.getOutputStream().write(x); // 10
+			}
+
 			client.close(); // закрываем соединение с клиентом
 			ss.close(); // закрываем серверный сокет, после этого никто уже
 						// соединиться не сможет
