@@ -35,37 +35,73 @@ public class Server {
 		try {
 			ServerSocket ss = new ServerSocket(3456); // создаем серверный сокет
 
-			Socket client;
-			String password = "";
-			try (Scanner input = new Scanner(System.in)) {
+			Socket client = null;
 
-				System.out.print("Введите пароль:");
-				password = input.nextLine().toString();
-
-			}
-			StringBuffer sendBuff = new StringBuffer();
-			sendBuff.append(password + "\n");
-			sendBuff.append(Server.read("E:/2/in1.txt"));
-
-			char[] mass = sendBuff.toString().toCharArray();
-			ArrayList<Byte> byteArray = new ArrayList<>();
-			for (char x : mass) {
-
-				byteArray.add((byte) (x >> 8));
-				byteArray.add((byte) x);
-			}
-			System.out.println(byteArray);
-
+			
 			System.out.println("Waiting...");
 			client = ss.accept();
 			// соединений от клиента
 			System.out.println("Connected"); // если мы дошли до этой строки,
-												// значит снами соединился
-												// клиент
 
-			for (int x : byteArray) {
-				client.getOutputStream().write(x); // 10
+			/*BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+			ArrayList<Byte> arrayList = new ArrayList<>(); // значит снами
+															// соединился
+			Integer streamInt = 0;
+			while (streamInt != -1) {
+				streamInt = in.read();
+
+				if (streamInt != -1) {
+					arrayList.add(streamInt.byteValue());
+				}
 			}
+			StringBuffer charReceive = new StringBuffer();
+
+			int upByte;
+			int downByte;
+			int tempInt;
+			for (int i = 0; i < (arrayList.size() - 1); i = i + 2) {
+				upByte = arrayList.get(i);
+				downByte = arrayList.get(i + 1);
+				tempInt = downByte | (upByte << 8);
+				charReceive.append((char) tempInt);
+
+			}*/
+			//if (charReceive.toString().equals("12345")) {
+			if (true) {	
+				
+				
+				 
+				
+				   /*StringBuffer readBuff = new StringBuffer();
+				  
+				  readBuff.append(Server.read("E:/2/in1.txt"));
+				  
+				  char[] mass = readBuff.toString().toCharArray(); 
+				  ArrayList<Byte>byteArray = new ArrayList<>(); for (char x : mass) {
+				  
+				  byteArray.add((byte) (x >> 8)); 
+				  byteArray.add((byte) x); }
+				  
+				  System.out.println(byteArray);
+				  
+				  for (int x : byteArray) { 
+					  client.getOutputStream().write(x); 
+				  //System.out.println(x);
+				  }*/
+				
+				  System.out.println("Принятый пароль верный:" );
+			
+			
+			} 
+			else {
+				System.out.println("Принятый пароль не верный:" );
+			}
+			// InputStream is = ss.getInputStream(); // клиент
+
+			/*
+			 * for (int x : byteArray) { client.getOutputStream().write(x); //
+			 * 10 }
+			 */
 
 			client.close(); // закрываем соединение с клиентом
 			ss.close(); // закрываем серверный сокет, после этого никто уже
