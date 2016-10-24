@@ -1,13 +1,12 @@
 package lab13;
 
-import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.io.*;
 
 public class Client {
-	public static void write(String fileName, StringBuffer text) {
-		// Определяем файл
+
+	public static void writeFile(String fileName, String text) {
+		// определяем файл
 		File file = new File(fileName);
 
 		try {
@@ -16,15 +15,15 @@ public class Client {
 				file.createNewFile();
 			}
 
-			// определяем переменную out типа PrintWriter, и создаем экземпляр
+			// определяем переменную out типа PrintWriter, и создаем экземпл¤р
 			// объекта
 			PrintWriter out = new PrintWriter(file.getAbsoluteFile());
 
 			try {
 				// с помощью метода print записываем строку text в файл
-				out.print(text.toString());
+				out.print(text);
 			} finally {
-				// закрываем файл, если не закрыть, то данные не запишутся
+				// закрываем файл, если не закрыть, то данные не запишутс¤
 				out.close();
 			}
 		} catch (IOException ewr) {
@@ -33,75 +32,63 @@ public class Client {
 		}
 	}
 
-	public static ArrayList<Byte> passwordIn(){
-	
-	ArrayList<Byte> byteArray = new ArrayList<>();
-	try (Scanner input = new Scanner(System.in)) {
+	public static void main(String[] ar) {
+		int serverPort = 1212; // указываем порт на котором висит программа на
+								// сервере
+		String address = "127.0.0.1"; // это IP-адрес компьютера, где
+										// исполняется серверная программа.
 
-		System.out.print("Введите пароль:");
-		String password = input.nextLine().toString();
-		
-		char[] mass = password.toCharArray();
-		
-		for (char x : mass) {
-
-			byteArray.add((byte) (x >> 8));
-			byteArray.add((byte) x);
-		}
-	}
-	
-	return byteArray;
-			
-}
-	public static void main(String args[]) {
 		try {
-			Socket s = new Socket("localhost", 3456); // соединение с сервером
-														// localhost, порт 3456
-			//InputStream is = s.getInputStream(); // получение потока для чтения
-													// от сервера
-			//PrintWriter out1 = new PrintWriter(s.getOutputStream(), true);
-			//BufferedReader inu = new BufferedReader(new InputStreamReader(System.in));
+			InetAddress ipAddress = InetAddress.getByName(address); // создаем
+																	// объект,
+																	// который
+																	// отображает
+																	// вышеописанный
+																	// IP-адрес.
+			System.out.println("Создаем сокет IP адрес:" + address + " порт:" + serverPort);
+			Socket socket = new Socket(ipAddress, serverPort); // создаем сокет
+																// используя
+																// IP-адрес и
+																// порт сервера.
 
-			
-			//StringBuffer sendBuff = new StringBuffer();
-			//sendBuff.append(Client.passwordIn());
+			// Берем входной и выходной потоки сокета, теперь можем получать и
+			// отсылать данные клиентом.
+			InputStream sin = socket.getInputStream();
+			OutputStream sout = socket.getOutputStream();
 
-			//ArrayList<Byte> byteArray = new ArrayList<>();
-			//byteArray=Client.passwordIn();
-			//System.out.println(byteArray);
-		
-			for (int x : Client.passwordIn()) {
-				s.getOutputStream().write(x);
-				 System.out.println(x);
-			}
+			// Конвертируем потоки в другой тип, чтоб легче обрабатывать
+			// текстовые сообщения.
+			DataInputStream in = new DataInputStream(sin);
+			DataOutputStream out = new DataOutputStream(sout);
 
-			ArrayList<Byte> arrayList = new ArrayList<>();
+			// Создаем поток для чтения с клавиатуры.
+			BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
+			String line = null;
 
-			/*Integer streamInt = 0;
-			while (streamInt != -1) {
-				streamInt = is.read();
-				if (streamInt != -1) {
+			while (true) {
+				System.out.println();
+				System.out.print("Для получения файла с сервера введите пароль и нажмите \"Enter\":");
+				System.out.println();
+				line = keyboard.readLine(); // ждем пока пользователь введет
+											// пароль и нажмет кнопку Enter.
+				out.writeUTF(line); // отсылаем введенную строку текста серверу.
+				out.flush(); // заставляем поток закончить передачу данных.
 
-					arrayList.add(streamInt.byteValue());
+				line = in.readUTF(); // ждем пока сервер ответит, если пароль
+										// верный пришлет файл,
+				// если нет, то ответит что пароль не верный, попробуйте еще раз
+				if (line.equals("Пароль не верный, повторите попытку")) {
+
+					System.out.println(line);
+				} else {
+					String path = "E:/2/out1.txt";
+					System.out.println("Файл принят, сохранен на диск по адресу:" + path + " содержание файла:");
+					System.out.println(line);
+					Client.writeFile(path, line);
+					socket.close();
+					System.exit(0);
 				}
 			}
-			
-			StringBuffer charReceive = new StringBuffer();
-			int upByte;
-			int downByte;
-			int tempInt;
-			for (int i = 0; i < (arrayList.size() - 2); i = i + 2) {
-				upByte = arrayList.get(i);
-				downByte = arrayList.get(i + 1);
-				tempInt = downByte | (upByte << 8);
-				charReceive.append((char) tempInt);
-
-			}
-			System.out.println(charReceive);
-
-			Client.write("E:/2/out1.txt", charReceive);*/
-
-			s.close(); // закрытие сокета
 		} catch (UnknownHostException e) { // на тот случай если сервер не будет
 											// найден
 			e.printStackTrace(); // печать текста исключения

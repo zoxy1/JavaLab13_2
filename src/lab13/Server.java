@@ -1,17 +1,11 @@
 package lab13;
 
-import java.io.*;
 import java.net.*;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Scanner;
-
-import sun.security.util.Password;
+import java.io.*;
 
 public class Server {
-
-	public static StringBuffer read(String fileName) {
+	public static String readFile(String fileName) {
 
 		StringBuffer stringBuffer = new StringBuffer();
 		// использование try-with-resources
@@ -28,88 +22,57 @@ public class Server {
 			System.out.println(e.getMessage());
 		}
 
-		return stringBuffer;
+		return stringBuffer.toString();
 	}
 
-	public static void main(String args[]) {
+	public static void main(String[] ar) {
+		int port = 1212; // порт, который будет слушать серверная программа
 		try {
-			ServerSocket ss = new ServerSocket(3456); // создаем серверный сокет
+			ServerSocket ss = new ServerSocket(port); // создаем серверный сокет
+			System.out.println("Создаем серверный сокет IP адрес:" + InetAddress.getByName(null) + " порт:" + port);
 
-			Socket client = null;
+			// и привязываем его к вышеуказанному порту
+			System.out.println("Waiting..."); // переходим в состояние ожидания
+												// соединений от клиента
 
-			
-			System.out.println("Waiting...");
-			client = ss.accept();
-			// соединений от клиента
+			Socket client = ss.accept(); // заставляем сервер ждать подключений
+											// и выводим сообщение когда кто-то
+											// связался с сервером
 			System.out.println("Connected"); // если мы дошли до этой строки,
+												// значит снами соединился
+												// клиент
+			System.out.println();
 
-			BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-			
-			ArrayList<Byte> arrayList = new ArrayList<>(); 
-															
-			Integer streamInt = 0;
-			while (streamInt != -1) {
-				streamInt = in.read();
+			// Берем входной и выходной потоки сокета, теперь можем получать и
+			// отсылать данные клиенту.
+			InputStream sin = client.getInputStream();
+			OutputStream sout = client.getOutputStream();
 
-				if (streamInt != -1) {
-					arrayList.add(streamInt.byteValue());
+			// Конвертируем потоки в другой тип, чтоб легче обрабатывать
+			// текстовые сообщения.
+			DataInputStream in = new DataInputStream(sin);
+			DataOutputStream out = new DataOutputStream(sout);
+
+			String line = null;
+			while (true) {
+				line = in.readUTF(); // ожидаем пока клиент пришлет строку
+										// текста.
+
+				if (line.equals("12345")) {
+					System.out.println("Принятый пароль:" + line + " верный");
+					out.writeUTF(Server.readFile("E:/2/in1.txt"));
+					client.close(); // закрываем соединение с клиентом
+					ss.close(); // закрываем серверный сокет, после этого никто
+								// уже соединиться не сможет
+					System.exit(0);
+				} else {
+					System.out.println("Принятый пароль:" + line + "  не верный");
+					out.writeUTF("Пароль не верный, повторите попытку");
 				}
-			}
-			StringBuffer charReceive = new StringBuffer();
-
-			int upByte;
-			int downByte;
-			int tempInt;
-			for (int i = 0; i < (arrayList.size() - 1); i = i + 2) {
-				upByte = arrayList.get(i);
-				downByte = arrayList.get(i + 1);
-				tempInt = downByte | (upByte << 8);
-				charReceive.append((char) tempInt);
 
 			}
-			if (charReceive.toString().equals("12345")) {
-			//if (true) {	
-				
-				
-				 
-				
-				   /*StringBuffer readBuff = new StringBuffer();
-				  
-				  readBuff.append(Server.read("E:/2/in1.txt"));
-				  
-				  char[] mass = readBuff.toString().toCharArray(); 
-				  ArrayList<Byte>byteArray = new ArrayList<>(); for (char x : mass) {
-				  
-				  byteArray.add((byte) (x >> 8)); 
-				  byteArray.add((byte) x); }
-				  
-				  System.out.println(byteArray);
-				  
-				  for (int x : byteArray) { 
-					  client.getOutputStream().write(x); 
-				  //System.out.println(x);
-				  }*/
-				
-				  System.out.println("Принятый пароль верный:" );
-			
-			
-			} 
-			else {
-				System.out.println("Принятый пароль не верный:" );
-			}
-			// InputStream is = ss.getInputStream(); // клиент
-
-			/*
-			 * for (int x : byteArray) { client.getOutputStream().write(x); //
-			 * 10 }
-			 */
-
-			client.close(); // закрываем соединение с клиентом
-			ss.close(); // закрываем серверный сокет, после этого никто уже
-						// соединиться не сможет
-		} catch (IOException e) { // на тот случай если возникнет ошибка при
-									// обмене по сети
-			e.printStackTrace(); // печать текста исключения
+		} catch (Exception x) {
+			x.printStackTrace();
 		}
 	}
 }
