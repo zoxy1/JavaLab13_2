@@ -33,41 +33,51 @@ public class Client {
 		}
 	}
 
+	public static ArrayList<Byte> passwordIn(){
+	
+	ArrayList<Byte> byteArray = new ArrayList<>();
+	try (Scanner input = new Scanner(System.in)) {
+
+		System.out.print("Введите пароль:");
+		String password = input.nextLine().toString();
+		
+		char[] mass = password.toCharArray();
+		
+		for (char x : mass) {
+
+			byteArray.add((byte) (x >> 8));
+			byteArray.add((byte) x);
+		}
+	}
+	
+	return byteArray;
+			
+}
 	public static void main(String args[]) {
 		try {
 			Socket s = new Socket("localhost", 3456); // соединение с сервером
 														// localhost, порт 3456
-			InputStream is = s.getInputStream(); // получение потока для чтения
+			//InputStream is = s.getInputStream(); // получение потока для чтения
 													// от сервера
-			PrintWriter out1 = new PrintWriter(s.getOutputStream(), true);
-			BufferedReader inu = new BufferedReader(new InputStreamReader(System.in));
+			//PrintWriter out1 = new PrintWriter(s.getOutputStream(), true);
+			//BufferedReader inu = new BufferedReader(new InputStreamReader(System.in));
 
-			String password = "";
-			try (Scanner input = new Scanner(System.in)) {
+			
+			//StringBuffer sendBuff = new StringBuffer();
+			//sendBuff.append(Client.passwordIn());
 
-				System.out.print("Введите пароль:");
-				password = input.nextLine().toString();
-				System.out.println(password);
-			}
-			StringBuffer sendBuff = new StringBuffer();
-			sendBuff.append(password);
-
-			char[] mass = sendBuff.toString().toCharArray();
-			ArrayList<Byte> byteArray = new ArrayList<>();
-			for (char x : mass) {
-
-				byteArray.add((byte) (x >> 8));
-				byteArray.add((byte) x);
-			}
-			System.out.println(byteArray);
-			for (int x : byteArray) {
+			//ArrayList<Byte> byteArray = new ArrayList<>();
+			//byteArray=Client.passwordIn();
+			//System.out.println(byteArray);
+		
+			for (int x : Client.passwordIn()) {
 				s.getOutputStream().write(x);
 				 System.out.println(x);
 			}
 
 			ArrayList<Byte> arrayList = new ArrayList<>();
 
-			Integer streamInt = 0;
+			/*Integer streamInt = 0;
 			while (streamInt != -1) {
 				streamInt = is.read();
 				if (streamInt != -1) {
@@ -89,7 +99,7 @@ public class Client {
 			}
 			System.out.println(charReceive);
 
-			Client.write("E:/2/out1.txt", charReceive);
+			Client.write("E:/2/out1.txt", charReceive);*/
 
 			s.close(); // закрытие сокета
 		} catch (UnknownHostException e) { // на тот случай если сервер не будет

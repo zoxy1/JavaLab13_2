@@ -43,9 +43,10 @@ public class Server {
 			// соединений от клиента
 			System.out.println("Connected"); // если мы дошли до этой строки,
 
-			/*BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-			ArrayList<Byte> arrayList = new ArrayList<>(); // значит снами
-															// соединился
+			BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+			
+			ArrayList<Byte> arrayList = new ArrayList<>(); 
+															
 			Integer streamInt = 0;
 			while (streamInt != -1) {
 				streamInt = in.read();
@@ -65,9 +66,9 @@ public class Server {
 				tempInt = downByte | (upByte << 8);
 				charReceive.append((char) tempInt);
 
-			}*/
-			//if (charReceive.toString().equals("12345")) {
-			if (true) {	
+			}
+			if (charReceive.toString().equals("12345")) {
+			//if (true) {	
 				
 				
 				 
