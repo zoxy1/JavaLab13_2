@@ -84,9 +84,9 @@ public class Client {
 					String path = "E:/2/out1.txt";
 					System.out.println("Файл принят, сохранен на диск по адресу:" + path + " содержание файла:");
 					System.out.println(line);
-					Client.writeFile(path, line);
-					socket.close();
-					System.exit(0);
+					Client.writeFile(path, line); // записываем принятые данные в файл 
+					socket.close(); // закрываем сокет
+					System.exit(0); // выходим из программы
 				}
 			}
 		} catch (UnknownHostException e) { // на тот случай если сервер не будет
