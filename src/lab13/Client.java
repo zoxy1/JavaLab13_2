@@ -81,7 +81,7 @@ public class Client {
 
 					System.out.println(line);
 				} else {
-					String path = "E:/2/out1.txt";
+					String path = "src/out1.txt";
 					System.out.println("Файл принят, сохранен на диск по адресу:" + path + " содержание файла:");
 					System.out.println(line);
 					Client.writeFile(path, line); // записываем принятые данные в файл 

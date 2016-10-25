@@ -60,7 +60,7 @@ public class Server {
 
 				if (line.equals("12345")) {
 					System.out.println("Принятый пароль:" + line + " верный");
-					out.writeUTF(Server.readFile("E:/2/in1.txt"));
+					out.writeUTF(Server.readFile("src/in1.txt"));
 					client.close(); // закрываем соединение с клиентом
 					ss.close(); // закрываем серверный сокет, после этого никто
 								// уже соединиться не сможет
